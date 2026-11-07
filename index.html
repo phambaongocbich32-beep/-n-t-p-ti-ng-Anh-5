@@ -347,7 +347,7 @@ function Home(v){
   v.append(el("section",{class:"hero"},
     el("span",{class:"unit",style:"color:#e6bf62"},"Global Success · Học kỳ 1"),
     el("h1",{html:"Ôn Tiếng Anh lớp 5 <em>thật vui</em>"}),
-    el("p",{},"Từ vựng có tranh trong sách, mẫu câu, 13 trò chơi và bài kiểm tra tự chấm điểm. Bấm vào loa để nghe giọng nữ Anh Mỹ đọc."),
+    el("p",{},"Từ vựng có tranh trong sách, mẫu câu, 12 trò chơi và bài kiểm tra tự chấm điểm. Bấm vào loa để nghe giọng nữ Anh Mỹ đọc."),
     el("div",{class:"row",style:"justify-content:flex-start"},el("button",{class:"btn",onclick:()=>{ac();go("vocab")}},"Bắt đầu học từ vựng"),el("button",{class:"btn alt",onclick:()=>go("tests")},"Làm bài kiểm tra"),el("span",{style:"font-weight:800"},"⭐ ",el("span",{id:"starCount"},stars()))) ));
   const T=[["📖","Từ vựng","Flashcard có tranh trong sách, bấm để nghe","vocab"],["💬","Mẫu câu","Hỏi và trả lời theo từng Unit","pat"],["🎮","Trò chơi","Quiz, ghép đôi, đoán chữ, cờ ca-rô, vòng quay...","games"],["🎯","Ôn giữa kỳ / cuối kỳ","Chọn phạm vi ôn theo Unit","review"],["📝","Bài kiểm tra","Đề trường, đề giữa kỳ, cuối kỳ, tự ra đề","tests"]];
   const g=el("div",{class:"grid"});T.forEach(([i,t,d,r])=>g.append(el("button",{class:"card tile",onclick:()=>{ac();go(r)}},el("div",{class:"ic"},i),el("h3",{},t),el("p",{},d))));
@@ -402,7 +402,7 @@ function Review(v){
 const GAMES=[
 ["flash","🃏","Học flashcard","Lật thẻ xem tranh, nghe và học nghĩa"],["quiz","❓","Quiz tranh","Nhìn tranh, chọn từ đúng"],["listen","🎧","Nghe chọn tranh","Nghe từ rồi chọn đúng tranh"],
 ["type","⌨️","Gõ từ","Nhìn tranh và nghĩa, gõ từ tiếng Anh"],["match","🔗","Ghép đôi","Ghép tranh với từ"],["memory","🧠","Lật thẻ trí nhớ","Tìm cặp tranh – từ giống nhau"],
-["hang","🪢","Hangman","Đoán chữ trước khi hết lượt"],["unscr","🔤","Sắp xếp chữ cái","Xếp chữ cái thành từ đúng"],["miss","✏️","Điền chữ thiếu","Chọn chữ cái còn thiếu"],
+["unscr","🔤","Sắp xếp chữ cái","Xếp chữ cái thành từ đúng"],["miss","✏️","Điền chữ thiếu","Chọn chữ cái còn thiếu"],
 ["ws","🔍","Tìm từ ẩn","Tìm từ trong bảng chữ cái"],["ttt","⭕","Cờ ca-rô","Trả lời đúng để đánh dấu X"],["wheel","🎡","Vòng quay","Quay và trả lời câu hỏi"],["sent","🧩","Xếp câu","Sắp xếp từ thành câu đúng"]];
 function Games(v){
   v.append(el("h2",{class:"t"},"Trò chơi ôn tập"),el("p",{class:"sub"},"Làm đúng sẽ có tiếng khen Great job! và pháo hoa."));
@@ -415,9 +415,9 @@ function runGame(k){
   const v=$("#view");v.innerHTML="";scrollTo(0,0);
   const box=el("div",{class:"stage"});
   v.append(el("div",{class:"top",style:"margin-bottom:12px"},el("button",{class:"btn alt sm",onclick:()=>go("games")},"← Các trò chơi"),el("h2",{class:"t",style:"margin:0"},g[1]+" "+g[2]),el("span",{class:"score"},"Phạm vi: "+SCOPES.find(s=>s[0]===scope)[1])),box);
-  const need=["hang","unscr","miss","ws"].includes(k)?poolL():pool();
+  const need=["unscr","miss","ws"].includes(k)?poolL():pool();
   if(k!=="sent"&&need.length<4){box.append(el("p",{},"Phạm vi này chưa đủ từ cho trò chơi. Hãy chọn phạm vi lớn hơn."),el("button",{class:"btn",onclick:()=>go("games")},"Quay lại"));return}
-  ({flash:gFlash,quiz:gQuiz,listen:gListen,type:gType,match:gMatch,memory:gMemory,hang:gHang,unscr:gUnscr,miss:gMiss,ws:gWs,ttt:gTtt,wheel:gWheel,sent:gSent})[k](box,k);
+  ({flash:gFlash,quiz:gQuiz,listen:gListen,type:gType,match:gMatch,memory:gMemory,unscr:gUnscr,miss:gMiss,ws:gWs,ttt:gTtt,wheel:gWheel,sent:gSent})[k](box,k);
 }
 function finish(box,score,total,k){
   box.innerHTML="";const ok=score/total>=.8;const st=ok?3:score/total>=.5?2:1;addStar(st);
@@ -467,15 +467,6 @@ function pairsGame(box,k,mem){
 const gMatch=(b,k)=>pairsGame(b,k,false),gMemory=(b,k)=>pairsGame(b,k,true);
 // kb helper
 function kbd(onKey){const w=el("div",{class:"kb"});"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(c=>{const b=el("button",{},c);b.onclick=()=>{b.disabled=true;onKey(c.toLowerCase())};w.append(b)});return w}
-// 7 hangman
-function gHang(box,k){
-  const p=poolL();let i=0,score=0;const items=shuf(p).slice(0,6);
-  (function next(){box.innerHTML="";if(i>=items.length)return finish(box,score,items.length,k);const it=items[i];const w=it.w.toLowerCase();let lives=6,got=new Set();
-    head(box,i,items.length,score);const slots=el("div",{class:"letters"});const lv=el("div",{class:"score"});
-    const upd=()=>{slots.innerHTML="";[...w].forEach(c=>slots.append(el("div",{class:"slot"},got.has(c)?c.toUpperCase():"")));lv.textContent="❤️".repeat(lives)+"🖤".repeat(6-lives)};
-    box.append(media(it),el("p",{class:"vi"},it.vi),lv,slots);upd();
-    const kb=kbd(c=>{if(w.includes(c)){got.add(c);sfxOk();upd();if([...w].every(x=>got.has(x))){score++;good();i++;setTimeout(next,1600)}}else{lives--;sfxNo();upd();if(lives<=0){box.append(el("div",{class:"ans"},"Đáp án: "+it.w));i++;setTimeout(next,1800)}}});box.append(kb)})();
-}
 // 8 unscramble
 function gUnscr(box,k){const p=poolL().filter(x=>x.w.length>=4);round(box,k,p.length>=4?p:poolL(),8,(b,it,cb)=>{
   const w=it.w.toLowerCase();let letters=[...w];let s=shuf(letters);if(s.join("")===w)s=shuf(letters);const ans=el("div",{class:"letters",style:"min-height:52px"}),bank=el("div",{class:"letters"});let cur=[];
